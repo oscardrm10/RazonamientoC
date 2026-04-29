@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Razonamiento Cuantitativo — Universidad de Córdoba</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --v1: #1B5E20; --v2: #2E7D32; --v3: #388E3C;
+  --v4: #43A047; --v5: #81C784; --v6: #C8E6C9;
+  --v7: #E8F5E9; --v8: #F1F8E9;
+  --dorado: #F9A825; --dorado-cl: #FFF8E1;
+  --rojo: #C62828; --rojo-cl: #FFEBEE;
+  --texto: #1a2e1a; --gris: #546E57; --blanco: #fff;
+  --sombra: 0 4px 24px rgba(27,94,32,0.13);
+  --radio: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--v8);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ── HERO ─────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, var(--v1) 0%, var(--v2) 50%, var(--v3) 100%);
+  color: var(--blanco);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-inner {
+  max-width: 960px; margin: 0 auto;
+  padding: 3rem 2rem 2.5rem;
+  display: flex; align-items: center; gap: 2.5rem;
+  position: relative; z-index: 1;
+}
+.hero-logo {
+  width: 110px; height: 110px;
+  background: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.2);
+  flex-shrink: 0; font-size: 2.5rem; overflow: hidden;
+}
+.hero-logo img { width: 95px; height: 95px; object-fit: contain; }
+.hero-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 900; line-height: 1.15;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.hero-text p { margin-top: .5rem; font-size: .95rem; opacity: .85; font-weight: 300; }
+.hero-badge {
+  display: inline-block; margin-top: .8rem;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 999px; padding: .25rem 1rem;
+  font-size: .8rem; font-weight: 600; letter-spacing: .05em;
+}
+.hero-docente {
+  background: rgba(255,255,255,0.12);
+  border-top: 1px solid rgba(255,255,255,0.2);
+  text-align: center; padding: .6rem 2rem;
+  font-size: .85rem; opacity: .9;
+  position: relative; z-index: 1;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
+.nav-wrap {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--v1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.nav {
+  max-width: 960px; margin: 0 auto;
+  display: flex; overflow-x: auto; gap: 0;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0;
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.75);
+  padding: .85rem 1.2rem;
+  font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all .2s; white-space: nowrap;
+}
+.nav-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+.nav-btn.active { color: var(--dorado); border-bottom-color: var(--dorado); background: rgba(249,168,37,0.1); }
+
+/* ── LAYOUT ───────────────────────────────────────── */
+.main { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.seccion { display: none; animation: fadeIn .35s ease; }
+.seccion.activa { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── TARJETAS ─────────────────────────────────────── */
+.card {
+  background: white; border-radius: var(--radio);
+  box-shadow: var(--sombra); padding: 1.75rem;
+  margin-bottom: 1.5rem; border-left: 5px solid var(--v3);
+}
+.card-titulo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem; color: var(--v1);
+  margin-bottom: 1rem; display: flex; align-items: center; gap: .6rem;
+}
+.card-titulo .ic { font-size: 1.4rem; }
+.card p, .card li { font-size: .95rem; line-height: 1.7; color: var(--gris); margin-bottom: .5rem; }
+.card ul, .card ol { padding-left: 1.4rem; }
+
+/* ── CAJAS ────────────────────────────────────────── */
+.caja {
+  border-radius: 10px; padding: 1rem 1.25rem;
+  margin: 1rem 0; font-size: .92rem;
+}
+.caja-verde { background: var(--v7); border-left: 4px solid var(--v3); }
+.caja-dorado { background: var(--dorado-cl); border-left: 4px solid var(--dorado); }
+.caja-rojo { background: var(--rojo-cl); border-left: 4px solid var(--rojo); }
+.caja-titulo { font-weight: 700; margin-bottom: .4rem; font-size: .88rem; text-transform: uppercase; letter-spacing: .04em; }
+.caja-verde .caja-titulo { color: var(--v2); }
+.caja-dorado .caja-titulo { color: #E65100; }
+.caja-rojo .caja-titulo { color: var(--rojo); }
+.caja p, .caja li { color: var(--texto); margin-bottom: .3rem; }
+
+/* ── PASOS ────────────────────────────────────────── */
+.pasos { counter-reset: paso; list-style: none; padding: 0; margin: .8rem 0; }
+.pasos li {
+  counter-increment: paso;
+  display: flex; gap: .8rem; align-items: flex-start;
+  margin-bottom: .6rem; font-size: .93rem; color: var(--texto);
+}
+.pasos li::before {
+  content: counter(paso);
+  min-width: 26px; height: 26px;
+  background: var(--v3); color: white;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: .78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+
+/* ── TABLAS ───────────────────────────────────────── */
+.tabla-wrap { overflow-x: auto; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th { background: var(--v2); color: white; padding: .6rem .9rem; text-align: left; font-weight: 600; }
+td { padding: .55rem .9rem; border-bottom: 1px solid var(--v6); color: var(--gris); }
+tr:nth-child(even) td { background: var(--v8); }
+tr:hover td { background: var(--v7); transition: background .15s; }
+
+/* ── CÓDIGO ───────────────────────────────────────── */
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--v1); color: #a5d6a7;
+  border-radius: 8px; padding: 1rem 1.2rem;
+  font-size: .88rem; line-height: 1.7;
+  margin: .8rem 0; white-space: pre-wrap;
+}
+.mono .hl { color: var(--dorado); font-weight: 600; }
+.mono .cm { color: #66BB6A; }
+
+/* ── EJERCICIOS ───────────────────────────────────── */
+.ejercicio {
+  background: white; border-radius: var(--radio);
+  box-shadow: var(--sombra); padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  border-top: 4px solid var(--v4);
+}
+.ej-num {
+  display: inline-block;
+  background: var(--v2); color: white;
+  border-radius: 999px; padding: .2rem .75rem;
+  font-size: .78rem; font-weight: 700;
+  margin-bottom: .7rem; letter-spacing: .05em;
+}
+.ej-enunc { font-size: .97rem; font-weight: 500; color: var(--texto); margin-bottom: 1rem; line-height: 1.55; }
+.opciones { display: flex; flex-direction: column; gap: .5rem; }
+.opcion {
+  display: flex; align-items: center; gap: .7rem;
+  padding: .65rem 1rem; border-radius: 8px;
+  border: 2px solid var(--v6); cursor: pointer;
+  font-size: .92rem; transition: all .18s;
+  background: white; color: var(--texto);
+  user-select: none;
+}
+.opcion:hover { border-color: var(--v4); background: var(--v8); }
+.opcion.correcta { border-color: var(--v3); background: var(--v7); color: var(--v1); font-weight: 600; }
+.opcion.incorrecta { border-color: var(--rojo); background: var(--rojo-cl); color: var(--rojo); }
+.opcion.deshabilitada { cursor: default; }
+.opcion .letra {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 50%; border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78rem; font-weight: 700;
+}
+.feedback {
+  margin-top: .8rem; padding: .7rem 1rem;
+  border-radius: 8px; font-size: .88rem; font-weight: 500;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.ok { background: var(--v7); color: var(--v1); border-left: 3px solid var(--v3); }
+.feedback.mal { background: var(--rojo-cl); color: var(--rojo); border-left: 3px solid var(--rojo); }
+
+/* ── CONVERTIDOR ──────────────────────────────────── */
+.conv-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1rem; margin: 1rem 0;
+}
+@media(max-width:580px){ .conv-grid { grid-template-columns: 1fr; } }
+.conv-box {
+  background: var(--v8); border: 2px solid var(--v5);
+  border-radius: 10px; padding: 1rem;
+}
+.conv-box label { display: block; font-size: .82rem; font-weight: 600; color: var(--v2); margin-bottom: .4rem; }
+.conv-box select, .conv-box input {
+  width: 100%; padding: .55rem .8rem;
+  border: 2px solid var(--v5); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+  background: white; color: var(--texto); outline: none;
+  transition: border-color .2s;
+}
+.conv-box select:focus, .conv-box input:focus { border-color: var(--v3); }
+.conv-resultado {
+  background: var(--v1); color: #a5d6a7;
+  border-radius: 10px; padding: 1rem 1.2rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 1rem;
+  margin-top: 1rem; min-height: 60px;
+  display: flex; flex-direction: column; gap: .3rem;
+}
+.conv-resultado .conv-val { font-size: 1.3rem; color: var(--dorado); font-weight: 700; }
+.conv-btn {
+  background: var(--v2); color: white;
+  border: none; border-radius: 8px; cursor: pointer;
+  padding: .65rem 1.5rem; font-size: .95rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: .8rem; transition: background .2s;
+}
+.conv-btn:hover { background: var(--v1); }
+
+/* ── CALCULADORA REGLA DE 3 ───────────────────────── */
+.calc-r3 {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: .8rem; align-items: end; margin: 1rem 0;
+}
+@media(max-width:500px){ .calc-r3 { grid-template-columns: 1fr 1fr; } }
+.calc-field label { display: block; font-size: .82rem; font-weight: 600; color: var(--v2); margin-bottom: .35rem; }
+.calc-field input {
+  width: 100%; padding: .55rem .8rem;
+  border: 2px solid var(--v5); border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 1.05rem;
+  background: white; color: var(--texto); outline: none;
+  transition: border-color .2s;
+}
+.calc-field input:focus { border-color: var(--v3); }
+.calc-field input[readonly] { background: var(--dorado-cl); font-weight: 700; color: var(--v1); }
+.tipo-r3 { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
+.tipo-r3 label {
+  display: flex; align-items: center; gap: .4rem;
+  padding: .4rem .9rem; border-radius: 999px;
+  border: 2px solid var(--v5); cursor: pointer; font-size: .88rem;
+  transition: all .18s; background: white;
+}
+.tipo-r3 input[type=radio] { display: none; }
+.tipo-r3 input[type=radio]:checked + span { font-weight: 700; }
+.tipo-r3 label:has(input:checked) { background: var(--v7); border-color: var(--v3); color: var(--v1); }
+
+/* ── PROGRESO ─────────────────────────────────────── */
+.progreso-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
+.prog-item {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--v5); background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78rem; font-weight: 700; color: var(--gris);
+  transition: all .2s;
+}
+.prog-item.ok { background: var(--v3); border-color: var(--v3); color: white; }
+.prog-item.mal { background: var(--rojo); border-color: var(--rojo); color: white; }
+
+/* ── SCORE ────────────────────────────────────────── */
+.score-panel {
+  background: linear-gradient(135deg, var(--v1), var(--v2));
+  color: white; border-radius: var(--radio);
+  padding: 1.5rem; text-align: center; margin-top: 1.5rem;
+}
+.score-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--dorado); }
+.score-label { font-size: .9rem; opacity: .8; margin-bottom: .5rem; }
+
+/* ── SECCION HEADER ───────────────────────────────── */
+.sec-header {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1.75rem; padding-bottom: 1rem;
+  border-bottom: 2px solid var(--v6);
+}
+.sec-icon {
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--v2); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+.sec-header h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--v1); }
+.sec-header p { font-size: .88rem; color: var(--gris); margin-top: .2rem; }
+
+/* ── CHIP ─────────────────────────────────────────── */
+.chip {
+  display: inline-block; background: var(--v6);
+  color: var(--v1); border-radius: 999px;
+  padding: .15rem .7rem; font-size: .78rem;
+  font-weight: 600; margin: .15rem;
+}
+.chip-dorado { background: var(--dorado-cl); color: #E65100; }
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media(max-width:640px){
+  .hero-inner { flex-direction: column; text-align: center; padding: 2rem 1.2rem 1.5rem; }
+  .hero-logo { width: 80px; height: 80px; }
+  .hero-logo img { width: 70px; height: 70px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Escudo_de_la_Universidad_de_C%C3%B3rdoba_%28Colombia%29.svg/200px-Escudo_de_la_Universidad_de_C%C3%B3rdoba_%28Colombia%29.svg.png"
+           alt="Logo Unicórdoba" onerror="this.parentNode.innerHTML='🎓'"/>
+    </div>
+    <div class="hero-text">
+      <h1>Razonamiento Cuantitativo</h1>
+      <p>Universidad de Córdoba — Licenciaturas · Semestre I 2025</p>
+      <span class="hero-badge">📚 Guía Interactiva de Estudio</span>
+    </div>
+  </div>
+  <div class="hero-docente">
+    👨‍🏫 &nbsp; <strong>MS.c. Oscar David Ramos</strong> &nbsp;·&nbsp; Docente Facultad de Educación y Ciencias Humanas
+  </div>
+</div>
+
+<!-- NAVEGACIÓN -->
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="nav-btn active" onclick="mostrar('inicio',this)">🏠 Inicio</button>
+    <button class="nav-btn" onclick="mostrar('sn',this)">💻 Sistemas Numéricos</button>
+    <button class="nav-btn" onclick="mostrar('algebra',this)">🔢 Álgebra</button>
+    <button class="nav-btn" onclick="mostrar('razones',this)">⚖️ Razones</button>
+    <button class="nav-btn" onclick="mostrar('r3',this)">📐 Regla de Tres</button>
+    <button class="nav-btn" onclick="mostrar('practica',this)">✏️ Práctica</button>
+    <button class="nav-btn" onclick="mostrar('convertidor',this)">🔄 Convertidor</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════ INICIO ═══════════════════ -->
+<section id="inicio" class="seccion activa">
+  <div class="sec-header">
+    <div class="sec-icon">🏠</div>
+    <div><h2>Bienvenido</h2><p>Selecciona un tema en el menú superior para comenzar</p></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;">
+    <div class="card" style="cursor:pointer;border-left-color:var(--v4)" onclick="mostrar('sn',document.querySelectorAll('.nav-btn')[1])">
+      <div class="card-titulo"><span class="ic">💻</span> Sistemas de Numeración</div>
+      <p>Aprende los sistemas <strong>binario, octal, decimal y hexadecimal</strong>. Domina las conversiones entre bases y entiende cómo los computadores representan la información.</p>
+      <div style="margin-top:.8rem"><span class="chip">Binario</span><span class="chip">Octal</span><span class="chip">Hexadecimal</span><span class="chip">Conversiones</span></div>
+    </div>
+    <div class="card" style="cursor:pointer;border-left-color:var(--dorado)" onclick="mostrar('algebra',document.querySelectorAll('.nav-btn')[2])">
+      <div class="card-titulo"><span class="ic">🔢</span> Álgebra Básica</div>
+      <p>Aprende a manejar <strong>variables, expresiones algebraicas y ecuaciones</strong> de primer grado paso a paso con ejemplos contextualizados.</p>
+      <div style="margin-top:.8rem"><span class="chip chip-dorado">Variables</span><span class="chip chip-dorado">Ecuaciones</span><span class="chip chip-dorado">Simplificación</span></div>
+    </div>
+    <div class="card" style="cursor:pointer;border-left-color:#7B1FA2" onclick="mostrar('razones',document.querySelectorAll('.nav-btn')[3])">
+      <div class="card-titulo"><span class="ic">⚖️</span> Razones y Proporciones</div>
+      <p>Comprende cómo <strong>comparar cantidades y establecer proporciones</strong>. Aplica la propiedad fundamental y distribuye cantidades en razones dadas.</p>
+      <div style="margin-top:.8rem"><span class="chip" style="background:#F3E5F5;color:#7B1FA2">Razones</span><span class="chip" style="background:#F3E5F5;color:#7B1FA2">Proporciones</span></div>
+    </div>
+    <div class="card" style="cursor:pointer;border-left-color:var(--rojo)" onclick="mostrar('r3',document.querySelectorAll('.nav-btn')[4])">
+      <div class="card-titulo"><span class="ic">📐</span> Regla de Tres</div>
+      <p>Domina la <strong>regla de tres directa e inversa</strong> para resolver problemas de la vida cotidiana y del contexto del departamento de Córdoba.</p>
+      <div style="margin-top:.8rem"><span class="chip" style="background:#FFEBEE;color:#C62828">Directa</span><span class="chip" style="background:#FFEBEE;color:#C62828">Inversa</span></div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="mostrar('practica',document.querySelectorAll('.nav-btn')[5])">
+      <div class="card-titulo"><span class="ic">✏️</span> Zona de Práctica</div>
+      <p>Pon a prueba lo aprendido con <strong>20 preguntas tipo Saber Pro</strong> contextualizadas en Córdoba. Recibe retroalimentación inmediata.</p>
+      <div style="margin-top:.8rem"><span class="chip">20 preguntas</span><span class="chip">Retroalimentación</span><span class="chip">Puntaje</span></div>
+    </div>
+    <div class="card" style="cursor:pointer;border-left-color:#0288D1" onclick="mostrar('convertidor',document.querySelectorAll('.nav-btn')[6])">
+      <div class="card-titulo"><span class="ic">🔄</span> Convertidor Interactivo</div>
+      <p>Convierte números entre cualquier sistema de numeración y resuelve <strong>reglas de tres automáticamente</strong>. Herramienta de práctica instantánea.</p>
+      <div style="margin-top:.8rem"><span class="chip" style="background:#E1F5FE;color:#0288D1">Bases</span><span class="chip" style="background:#E1F5FE;color:#0288D1">Calculadora</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SISTEMAS DE NUMERACIÓN ═══════════════════ -->
+<section id="sn" class="seccion">
+  <div class="sec-header">
+    <div class="sec-icon">💻</div>
+    <div><h2>Sistemas de Numeración</h2><p>Binario · Octal · Decimal · Hexadecimal</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">📖</span> ¿Qué es un sistema de numeración?</div>
+    <p>Un sistema de numeración es un conjunto de símbolos y reglas que permiten representar cantidades. Cada sistema se define por su <strong>base</strong>, que indica cuántos símbolos diferentes usa.</p>
+    <div class="tabla-wrap" style="margin-top:1rem">
+      <table>
+        <tr><th>Sistema</th><th>Base</th><th>Símbolos</th><th>Uso principal</th></tr>
+        <tr><td><strong>Decimal</strong></td><td>10</td><td>0, 1, 2, 3, 4, 5, 6, 7, 8, 9</td><td>Vida cotidiana</td></tr>
+        <tr><td><strong>Binario</strong></td><td>2</td><td>0, 1</td><td>Computadores, electrónica</td></tr>
+        <tr><td><strong>Octal</strong></td><td>8</td><td>0, 1, 2, 3, 4, 5, 6, 7</td><td>Sistemas operativos, permisos</td></tr>
+        <tr><td><strong>Hexadecimal</strong></td><td>16</td><td>0–9, A, B, C, D, E, F</td><td>Colores web, memoria, redes</td></tr>
+      </table>
+    </div>
+    <div class="caja caja-dorado" style="margin-top:1rem">
+      <div class="caja-titulo">💡 Equivalencias hexadecimales</div>
+      <p>A=10 · B=11 · C=12 · D=13 · E=14 · F=15</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">🔁</span> Conversión Decimal → Binario</div>
+    <p>Se divide el número entre 2 sucesivamente y se leen los <strong>restos de abajo hacia arriba</strong>.</p>
+    <div class="caja caja-verde">
+      <div class="caja-titulo">📌 Ejemplo: Convertir 45 a binario</div>
+      <div class="mono">45 ÷ 2 = 22  <span class="hl">resto 1</span>
+22 ÷ 2 = 11  <span class="hl">resto 0</span>
+11 ÷ 2 =  5  <span class="hl">resto 1</span>
+ 5 ÷ 2 =  2  <span class="hl">resto 1</span>
+ 2 ÷ 2 =  1  <span class="hl">resto 0</span>
+ 1 ÷ 2 =  0  <span class="hl">resto 1</span>
+
+<span class="cm">Leyendo de abajo hacia arriba:</span>
+<span class="hl">45₁₀ = 101101₂</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">🔁</span> Conversión Binario → Decimal</div>
+    <p>Se multiplica cada dígito por la potencia de 2 correspondiente a su posición (de derecha a izquierda, empezando en 0) y se suman los resultados.</p>
+    <div class="caja caja-verde">
+      <div class="caja-titulo">📌 Ejemplo: Convertir 11010110 a decimal</div>
+      <div class="mono"><span class="cm">Posición:</span>  7  6  5  4  3  2  1  0
+<span class="cm">Dígito:   </span>  1  1  0  1  0  1  1  0
+
+1×2⁷ + 1×2⁶ + 0×2⁵ + 1×2⁴ + 0×2³ + 1×2² + 1×2¹ + 0×2⁰
+= 128 + 64 + 0 + 16 + 0 + 4 + 2 + 0
+= <span class="hl">214</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">🔁</span> Conversiones con Hexadecimal y Octal</div>
+    <div class="caja caja-verde">
+      <div class="caja-titulo">📌 Decimal → Hexadecimal: 156</div>
+      <div class="mono">156 ÷ 16 = 9  <span class="hl">resto 12 → C</span>
+  9 ÷ 16 = 0  <span class="hl">resto 9</span>
+
+<span class="hl">156₁₀ = 9C₁₆</span></div>
+    </div>
+    <div class="caja caja-verde" style="margin-top:.8rem">
+      <div class="caja-titulo">📌 Decimal → Octal: 83</div>
+      <div class="mono">83 ÷ 8 = 10  <span class="hl">resto 3</span>
+10 ÷ 8 =  1  <span class="hl">resto 2</span>
+ 1 ÷ 8 =  0  <span class="hl">resto 1</span>
+
+<span class="hl">83₁₀ = 123₈</span></div>
+    </div>
+    <div class="caja caja-dorado" style="margin-top:.8rem">
+      <div class="caja-titulo">⚡ Atajo: Binario ↔ Octal (grupos de 3)</div>
+      <div class="mono"><span class="cm">Binario:</span>  110  101
+<span class="cm">Octal:  </span>   6    5  →  <span class="hl">65₈</span></div>
+    </div>
+    <div class="caja caja-dorado" style="margin-top:.8rem">
+      <div class="caja-titulo">⚡ Atajo: Binario ↔ Hexadecimal (grupos de 4)</div>
+      <div class="mono"><span class="cm">Binario:</span>  1010  1100
+<span class="cm">Hex:    </span>    A     C   →  <span class="hl">AC₁₆</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ÁLGEBRA ═══════════════════ -->
+<section id="algebra" class="seccion">
+  <div class="sec-header">
+    <div class="sec-icon">🔢</div>
+    <div><h2>Álgebra Básica</h2><p>Variables · Expresiones · Ecuaciones de primer grado</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">📖</span> Variables y Expresiones Algebraicas</div>
+    <p>Una <strong>variable</strong> es una letra que representa un valor desconocido. Una <strong>expresión algebraica</strong> combina variables, números y operaciones.</p>
+    <div class="tabla-wrap" style="margin-top:1rem">
+      <table>
+        <tr><th>Expresión</th><th>Tipo</th><th>Términos</th></tr>
+        <tr><td><strong>5x</strong></td><td>Monomio</td><td>1 término</td></tr>
+        <tr><td><strong>3a + 2b</strong></td><td>Binomio</td><td>2 términos</td></tr>
+        <tr><td><strong>x² + 3x − 7</strong></td><td>Trinomio</td><td>3 términos</td></tr>
+      </table>
+    </div>
+    <div class="caja caja-dorado" style="margin-top:1rem">
+      <div class="caja-titulo">📌 Términos semejantes</div>
+      <p>Solo se pueden sumar o restar términos con la <strong>misma variable y el mismo exponente</strong>.</p>
+      <p>✔ 3x + 5x = 8x &nbsp;|&nbsp; ✘ 3x + 5y (NO se combinan)</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">🧮</span> Simplificación de expresiones</div>
+    <p><strong>Ejemplo:</strong> Simplificar &nbsp;<code style="background:var(--v7);padding:.15rem .4rem;border-radius:4px">4a + 3b − 2a + 7b</code></p>
+    <ol class="pasos" style="margin-top:.8rem">
+      <li>Identificar términos semejantes: <em>los 'a' y los 'b' por separado</em></li>
+      <li>Agrupar: (4a − 2a) + (3b + 7b)</li>
+      <li>Operar: <strong>2a + 10b ✓</strong></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">⚖️</span> Ecuaciones de primer grado</div>
+    <div class="caja caja-verde">
+      <div class="caja-titulo">📌 Principio fundamental</div>
+      <p>Todo lo que hagas a un lado de la ecuación, <strong>debes hacerlo al otro lado también</strong>. El objetivo es despejar la variable.</p>
+    </div>
+    <p style="margin-top:.8rem"><strong>Ejemplo 1:</strong> Resolver &nbsp;<code style="background:var(--v7);padding:.15rem .4rem;border-radius:4px">3x + 7 = 25</code></p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Restar 7 a ambos lados: &nbsp; 3x = 18</li>
+      <li>Dividir entre 3: &nbsp; <strong>x = 6 ✓</strong></li>
+      <li>Verificar: 3(6) + 7 = 25 ✓</li>
+    </ol>
+    <p style="margin-top:1rem"><strong>Ejemplo 2:</strong> Resolver &nbsp;<code style="background:var(--v7);padding:.15rem .4rem;border-radius:4px">2(x + 4) = 20</code></p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Distributiva: &nbsp; 2x + 8 = 20</li>
+      <li>Restar 8: &nbsp; 2x = 12</li>
+      <li>Dividir entre 2: &nbsp; <strong>x = 6 ✓</strong></li>
+    </ol>
+    <p style="margin-top:1rem"><strong>Ejemplo 3:</strong> En Unicórdoba, la ecuación &nbsp;<code style="background:var(--v7);padding:.15rem .4rem;border-radius:4px">3x + 120 = 390</code>&nbsp; modela la matrícula de 3 programas.</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>3x = 390 − 120 = 270</li>
+      <li>x = 270 ÷ 3 = <strong>90 estudiantes por programa ✓</strong></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════ RAZONES ═══════════════════ -->
+<section id="razones" class="seccion">
+  <div class="sec-header">
+    <div class="sec-icon">⚖️</div>
+    <div><h2>Razones y Proporciones</h2><p>Comparación de cantidades · Propiedad fundamental</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">📖</span> ¿Qué es una Razón?</div>
+    <p>Una razón compara dos cantidades mediante una división. Se escribe <strong>a:b</strong> y se lee "a es a b".</p>
+    <div class="caja caja-verde" style="margin-top:.8rem">
+      <div class="caja-titulo">📌 Ejemplo en Unicórdoba</div>
+      <p>Un grupo de Razonamiento Cuantitativo tiene 24 mujeres y 18 hombres.</p>
+      <p>Razón mujeres:hombres = 24:18 = <strong>4:3</strong> (dividiendo entre MCD = 6)</p>
+      <p>→ Por cada 4 mujeres hay 3 hombres.</p>
+    </div>
+    <p style="margin-top:.8rem"><strong>¿Cómo simplificar?</strong> Divide ambos términos entre su Máximo Común Divisor (MCD).</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Ejemplo: razón 36:24 &nbsp;→&nbsp; MCD(36,24) = 12</li>
+      <li>36 ÷ 12 = 3 &nbsp;|&nbsp; 24 ÷ 12 = 2</li>
+      <li>Resultado: <strong>3:2 ✓</strong></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">📐</span> Proporciones</div>
+    <p>Una proporción establece que dos razones son iguales: <strong>a:b = c:d</strong></p>
+    <div class="caja caja-dorado">
+      <div class="caja-titulo">📌 Propiedad fundamental</div>
+      <p><strong>a × d = b × c</strong> &nbsp;(extremos × medios)</p>
+      <p>Si a:b = c:d &nbsp;→&nbsp; a·d = b·c</p>
+    </div>
+    <p style="margin-top:.8rem"><strong>Ejemplo:</strong> Si &nbsp;4:6 = 10:x, ¿cuál es x?</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>4 × x = 6 × 10</li>
+      <li>4x = 60</li>
+      <li>x = 60 ÷ 4 = <strong>15 ✓</strong></li>
+    </ol>
+    <p style="margin-top:1rem"><strong>Distribución en razón dada</strong> — Ejemplo Feria Ganadera Montería 2025:</p>
+    <p style="color:var(--gris);font-size:.92rem">Bovinos y porcinos en razón 7:3, total 350 animales. ¿Cuántos bovinos?</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Total de partes: 7 + 3 = 10</li>
+      <li>Valor de 1 parte: 350 ÷ 10 = 35</li>
+      <li>Bovinos = 7 × 35 = <strong>245 ✓</strong></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════ REGLA DE TRES ═══════════════════ -->
+<section id="r3" class="seccion">
+  <div class="sec-header">
+    <div class="sec-icon">📐</div>
+    <div><h2>Regla de Tres</h2><p>Directa · Inversa · Casos contextualizados</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">🟢</span> Regla de Tres Directa</div>
+    <div class="caja caja-verde">
+      <div class="caja-titulo">¿Cuándo aplicarla?</div>
+      <p>Cuando al <strong>aumentar</strong> una cantidad, la otra también <strong>aumenta</strong>. Van en el mismo sentido.</p>
+      <p><strong>Fórmula:</strong> &nbsp; x = (a₂ × b₁) ÷ a₁</p>
+    </div>
+    <p style="margin-top:.8rem"><strong>Ejemplo — Ruta Montería–Lorica:</strong> Una buseta recorre 96 km con 8 litros. ¿Cuántos litros para 48 km?</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Identificar: más km → más litros = <strong>DIRECTA</strong></li>
+      <li>Plantear: 96 km → 8 L &nbsp;|&nbsp; 48 km → x</li>
+      <li>x = (48 × 8) ÷ 96 = 384 ÷ 96 = <strong>4 litros ✓</strong></li>
+    </ol>
+    <p style="margin-top:1rem"><strong>Ejemplo — Pavimentación Montería–San Pelayo:</strong> En 6 meses se pavimentó el 40%. ¿Cuántos meses para el 100%?</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Más porcentaje → más meses = <strong>DIRECTA</strong></li>
+      <li>40% → 6 meses &nbsp;|&nbsp; 100% → x</li>
+      <li>x = (100 × 6) ÷ 40 = <strong>15 meses ✓</strong></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">🔴</span> Regla de Tres Inversa</div>
+    <div class="caja caja-rojo">
+      <div class="caja-titulo">¿Cuándo aplicarla?</div>
+      <p>Cuando al <strong>aumentar</strong> una cantidad, la otra <strong>disminuye</strong>. Van en sentido contrario.</p>
+      <p><strong>Fórmula:</strong> &nbsp; x = (a₁ × b₁) ÷ a₂</p>
+    </div>
+    <p style="margin-top:.8rem"><strong>Ejemplo — Adecuación bloque Unicórdoba:</strong> 6 albañiles terminan en 20 días. ¿Cuántos días con 10 albañiles?</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Más albañiles → menos días = <strong>INVERSA</strong></li>
+      <li>6 albañiles → 20 días &nbsp;|&nbsp; 10 albañiles → x</li>
+      <li>x = (6 × 20) ÷ 10 = 120 ÷ 10 = <strong>12 días ✓</strong></li>
+    </ol>
+    <p style="margin-top:1rem"><strong>Ejemplo — Sala de cómputo Unicórdoba:</strong> Con 4 computadores se procesan datos en 6 horas. ¿Cuánto con 8?</p>
+    <ol class="pasos" style="margin-top:.6rem">
+      <li>Más computadores → menos tiempo = <strong>INVERSA</strong></li>
+      <li>4 equipos → 6 h &nbsp;|&nbsp; 8 equipos → x</li>
+      <li>x = (4 × 6) ÷ 8 = <strong>3 horas ✓</strong></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">📊</span> ¿Directa o Inversa? — Guía rápida</div>
+    <div class="tabla-wrap">
+      <table>
+        <tr><th>🟢 Directa</th><th>🔴 Inversa</th></tr>
+        <tr><td>Más km → más combustible</td><td>Más obreros → menos días</td></tr>
+        <tr><td>Más horas → más producción</td><td>Más máquinas → menos tiempo</td></tr>
+        <tr><td>Más estudiantes → más sillas</td><td>Más velocidad → menos tiempo</td></tr>
+        <tr><td>Más porcentaje → más tiempo</td><td>Más grifos → menos tiempo en llenar</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PRÁCTICA ═══════════════════ -->
+<section id="practica" class="seccion">
+  <div class="sec-header">
+    <div class="sec-icon">✏️</div>
+    <div><h2>Zona de Práctica</h2><p>20 preguntas tipo Saber Pro — Retroalimentación inmediata</p></div>
+  </div>
+
+  <div class="card" style="padding:1.2rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem">
+      <div>
+        <strong>Tu progreso:</strong>
+        <span id="contador" style="color:var(--v2);font-weight:700"> 0 / 20</span>
+        &nbsp;·&nbsp; Correctas: <span id="correctas" style="color:var(--v2);font-weight:700">0</span>
+      </div>
+      <button class="conv-btn" onclick="reiniciar()" style="margin:0">🔄 Reiniciar</button>
+    </div>
+    <div class="progreso-bar" id="progreso" style="margin-top:.8rem"></div>
+  </div>
+
+  <div id="ejercicios-container"></div>
+
+  <div id="score-final" style="display:none" class="score-panel">
+    <div class="score-label">Tu puntuación final</div>
+    <div class="score-num" id="score-num">0/20</div>
+    <p id="score-msg" style="opacity:.9;margin-top:.5rem"></p>
+    <button class="conv-btn" onclick="reiniciar()" style="margin-top:1rem;background:rgba(255,255,255,0.2)">🔄 Intentar de nuevo</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ CONVERTIDOR ═══════════════════ -->
+<section id="convertidor" class="seccion">
+  <div class="sec-header">
+    <div class="sec-icon">🔄</div>
+    <div><h2>Herramientas Interactivas</h2><p>Convertidor de bases · Calculadora de regla de tres</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">💻</span> Convertidor de Sistemas Numéricos</div>
+    <div class="conv-grid">
+      <div class="conv-box">
+        <label>Número a convertir</label>
+        <input type="text" id="conv-num" placeholder="Ej: 45" oninput="convertir()"/>
+        <label style="margin-top:.7rem">Base de origen</label>
+        <select id="conv-origen" onchange="convertir()">
+          <option value="10">Decimal (base 10)</option>
+          <option value="2">Binario (base 2)</option>
+          <option value="8">Octal (base 8)</option>
+          <option value="16">Hexadecimal (base 16)</option>
+        </select>
+      </div>
+      <div class="conv-box">
+        <label>Convertir a</label>
+        <select id="conv-destino" onchange="convertir()">
+          <option value="2">Binario (base 2)</option>
+          <option value="8">Octal (base 8)</option>
+          <option value="10">Decimal (base 10)</option>
+          <option value="16">Hexadecimal (base 16)</option>
+        </select>
+        <label style="margin-top:.7rem">Resultado</label>
+        <div class="conv-resultado" id="conv-resultado">
+          <span style="opacity:.5;font-size:.9rem">Ingresa un número arriba...</span>
+        </div>
+      </div>
+    </div>
+    <div id="conv-paso" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-titulo"><span class="ic">📐</span> Calculadora de Regla de Tres</div>
+    <div class="tipo-r3">
+      <label><input type="radio" name="tipo" value="directa" checked onchange="calcR3()"><span>🟢 Directa</span></label>
+      <label><input type="radio" name="tipo" value="inversa" onchange="calcR3()"><span>🔴 Inversa</span></label>
+    </div>
+    <p style="color:var(--gris);font-size:.9rem;margin-bottom:.8rem">
+      Ingresa los tres valores conocidos (A₁, B₁, A₂) y obtén X automáticamente.
+    </p>
+    <div class="calc-r3">
+      <div class="calc-field">
+        <label>A₁ (valor 1)</label>
+        <input type="number" id="r3-a1" placeholder="Ej: 96" oninput="calcR3()"/>
+      </div>
+      <div class="calc-field">
+        <label>B₁ (valor 2)</label>
+        <input type="number" id="r3-b1" placeholder="Ej: 8" oninput="calcR3()"/>
+      </div>
+      <div class="calc-field">
+        <label>A₂ (valor 3)</label>
+        <input type="number" id="r3-a2" placeholder="Ej: 48" oninput="calcR3()"/>
+      </div>
+      <div class="calc-field">
+        <label>X = Resultado</label>
+        <input type="number" id="r3-x" readonly placeholder="---"/>
+      </div>
+    </div>
+    <div id="r3-explicacion" style="margin-top:.5rem"></div>
+  </div>
+</section>
+
+</div><!-- /main -->
+
+<div style="text-align:center;padding:1.5rem;background:var(--v1);color:rgba(255,255,255,0.7);font-size:.82rem;margin-top:2rem">
+  <strong style="color:white">Universidad de Córdoba</strong> · Facultad de Educación y Ciencias Humanas ·
+  MS.c. Oscar David Ramos · Semestre I 2025 · Montería, Colombia
+</div>
+
+<script>
+// ── NAVEGACIÓN ─────────────────────────────────────────────────────────────
+function mostrar(id, btn) {
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('activa');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── BANCO DE PREGUNTAS ─────────────────────────────────────────────────────
+const PREGUNTAS = [
+  // Sistemas de Numeración
+  { t:'💻 Sistemas', e:'El Laboratorio de Informática de Unicórdoba configura una dirección de memoria con valor decimal 45. ¿Cuál es su representación binaria?',
+    ops:['101011','101101','110101','100111'], r:1, j:'45 en binario: divide entre 2 y lee restos al revés → 101101' },
+  { t:'💻 Sistemas', e:'El DANE asignó al municipio de Lorica el código binario 11010110. ¿A qué valor decimal equivale?',
+    ops:['204','214','198','208'], r:1, j:'128+64+0+16+0+4+2+0 = 214' },
+  { t:'💻 Sistemas', e:'La Oficina de Sistemas de Unicórdoba necesita convertir el código 156 al sistema hexadecimal. ¿Cuál es el resultado?',
+    ops:['9B','9C','A2','B4'], r:1, j:'156 ÷ 16 = 9 resto 12. Como 12=C en hex → 9C₁₆' },
+  { t:'💻 Sistemas', e:'Un atlas digital del conflicto en Córdoba usa el código hexadecimal 2F. ¿A qué decimal equivale?',
+    ops:['45','47','43','49'], r:1, j:'2×16 + 15×1 = 32+15 = 47. La letra F = 15 en hexadecimal' },
+  { t:'💻 Sistemas', e:'El ICA regional Córdoba registra en octal el número 83 (decimal) de cabezas de ganado. ¿Cuál es su representación octal?',
+    ops:['121','123','125','127'], r:1, j:'83÷8=10 r3 | 10÷8=1 r2 | 1÷8=0 r1. De abajo arriba: 123₈' },
+  { t:'💻 Sistemas', e:'En la Feria Ganadera de Montería el lote premiado tiene código octal 347. ¿Cuál es su valor decimal?',
+    ops:['227','231','215','239'], r:0, j:'3×64 + 4×8 + 7×1 = 192+32+3 = 227' },
+  { t:'💻 Sistemas', e:'Para convertir binario a octal directamente, ¿cuál es la regla más eficiente?',
+    ops:['Dividir entre 8 sucesivamente','Agrupar en grupos de 3 bits de derecha a izquierda','Sumar todos los bits y dividir entre 8','Solo se puede pasar por decimal'], r:1, j:'Agrupar en tríos: 110 101 → 6 5 → 65₈' },
+  { t:'💻 Sistemas', e:'La sala de cómputo de Unicórdoba explica que 11111111 es el máximo de un byte. ¿Cuánto vale en decimal?',
+    ops:['128','254','255','256'], r:2, j:'1+2+4+8+16+32+64+128 = 255' },
+  { t:'💻 Sistemas', e:'El portal web de Unicórdoba usa FF en su código de color. ¿Cuál es el valor decimal de FF hexadecimal?',
+    ops:['240','250','255','256'], r:2, j:'15×16 + 15×1 = 240+15 = 255' },
+  { t:'💻 Sistemas', e:'Una auditoría de seguridad en Unicórdoba encuentra la dirección binaria 10101100. ¿Cuál es su representación hexadecimal?',
+    ops:['AB','AC','BC','BA'], r:1, j:'1010=A y 1100=C en hexadecimal → AC₁₆' },
+  // Álgebra
+  { t:'🔢 Álgebra', e:'La matrícula de Unicórdoba se modela con 3x + 120 = 390, donde x es el número de estudiantes por programa. ¿Cuántos hay por programa?',
+    ops:['80','90','100','110'], r:1, j:'3x = 390-120 = 270 → x = 270÷3 = 90' },
+  { t:'🔢 Álgebra', e:'El presupuesto de la Biblioteca de Unicórdoba se expresa como 5a + 3b − 2a + 7b. ¿Cuál es la expresión simplificada?',
+    ops:['7a + 10b','3a + 10b','3a + 4b','7a + 4b'], r:1, j:'(5a-2a)+(3b+7b) = 3a + 10b' },
+  { t:'🔢 Álgebra', e:'Resuelve: 5x − 8 = 42',
+    ops:['x = 8','x = 9','x = 10','x = 11'], r:2, j:'5x = 42+8 = 50 → x = 10' },
+  // Razones y Proporciones
+  { t:'⚖️ Razones', e:'Un grupo de Licenciatura en Informática de Unicórdoba tiene 24 mujeres y 18 hombres. ¿Cuál es la razón de mujeres a hombres?',
+    ops:['3:2','4:3','2:3','3:4'], r:1, j:'24:18 = 4:3 (simplificando entre 6)' },
+  { t:'⚖️ Razones', e:'La Feria Ganadera de Montería registra bovinos y porcinos en razón 7:3, con 350 animales en total. ¿Cuántos bovinos hay?',
+    ops:['210','230','245','175'], r:2, j:'1 parte = 350÷10 = 35. Bovinos = 7×35 = 245' },
+  { t:'⚖️ Razones', e:'La propiedad fundamental de las proporciones establece que si a:b = c:d, entonces:',
+    ops:['a+d = b+c','a×d = b×c','a-b = c-d','a÷c = b÷d'], r:1, j:'Producto de extremos = producto de medios: a×d = b×c' },
+  { t:'⚖️ Razones', e:'Unicórdoba distribuye el presupuesto de investigación en proporción 4:6. Si Facultad A recibe $10M, ¿cuánto recibe la Facultad B? (4:6 = 10:x)',
+    ops:['12M','15M','18M','20M'], r:1, j:'4×x = 6×10 → 4x = 60 → x = 15M' },
+  // Regla de Tres
+  { t:'📐 Regla de 3', e:'Una buseta Montería–Lorica consume 8 litros en 96 km. ¿Cuántos litros consume hasta Cereté (48 km)? (Regla directa)',
+    ops:['3 litros','4 litros','5 litros','6 litros'], r:1, j:'(48×8)÷96 = 4 litros. Directa: menos km → menos litros' },
+  { t:'📐 Regla de 3', e:'La Gobernación de Córdoba pavimentó el 40% de una vía en 6 meses. ¿Cuántos meses para el 100%? (Regla directa)',
+    ops:['12','15','18','20'], r:1, j:'(100×6)÷40 = 15 meses' },
+  { t:'📐 Regla de 3', e:'6 albañiles terminan una obra en 20 días. ¿Cuántos días tardan 10 albañiles? (Regla inversa)',
+    ops:['8 días','10 días','12 días','14 días'], r:2, j:'(6×20)÷10 = 12 días. Inversa: más albañiles → menos días' },
+];
+
+let respuestas = new Array(PREGUNTAS.length).fill(null);
+let respondidas = 0;
+
+function initPractica() {
+  const c = document.getElementById('ejercicios-container');
+  const prog = document.getElementById('progreso');
+  c.innerHTML = ''; prog.innerHTML = '';
+
+  PREGUNTAS.forEach((p, i) => {
+    // Burbuja de progreso
+    const burbuja = document.createElement('div');
+    burbuja.className = 'prog-item'; burbuja.id = `pb${i}`; burbuja.textContent = i+1;
+    prog.appendChild(burbuja);
+
+    // Ejercicio
+    const div = document.createElement('div');
+    div.className = 'ejercicio'; div.id = `ej${i}`;
+    let ops = p.ops.map((o,j) => `
+      <div class="opcion" id="op${i}_${j}" onclick="responder(${i},${j})">
+        <span class="letra">${'ABCD'[j]}</span> ${o}
+      </div>`).join('');
+    div.innerHTML = `
+      <div class="ej-num">🏫 ${p.t} · Pregunta ${i+1}</div>
+      <div class="ej-enunc">${p.e}</div>
+      <div class="opciones">${ops}</div>
+      <div class="feedback" id="fb${i}"></div>`;
+    c.appendChild(div);
+  });
+}
+
+function responder(pregIdx, opIdx) {
+  if (respuestas[pregIdx] !== null) return;
+  const p = PREGUNTAS[pregIdx];
+  respuestas[pregIdx] = opIdx;
+  respondidas++;
+
+  const correcta = opIdx === p.r;
+  const fb = document.getElementById(`fb${pregIdx}`);
+  const pb = document.getElementById(`pb${pregIdx}`);
+
+  // Marcar opciones
+  for (let j = 0; j < p.ops.length; j++) {
+    const op = document.getElementById(`op${pregIdx}_${j}`);
+    op.classList.add('deshabilitada');
+    if (j === p.r) op.classList.add('correcta');
+    else if (j === opIdx && !correcta) op.classList.add('incorrecta');
+  }
+
+  // Feedback
+  fb.className = `feedback show ${correcta ? 'ok' : 'mal'}`;
+  fb.innerHTML = correcta
+    ? `✅ <strong>¡Correcto!</strong> ${p.j}`
+    : `❌ <strong>Incorrecto.</strong> La respuesta correcta es <strong>${'ABCD'[p.r]}</strong>. ${p.j}`;
+
+  // Progreso
+  pb.classList.add(correcta ? 'ok' : 'mal');
+
+  // Actualizar contador
+  const correctasN = respuestas.filter((r,i) => r === PREGUNTAS[i].r).length;
+  document.getElementById('contador').textContent = ` ${respondidas} / ${PREGUNTAS.length}`;
+  document.getElementById('correctas').textContent = correctasN;
+
+  // Score final
+  if (respondidas === PREGUNTAS.length) {
+    setTimeout(() => {
+      const sf = document.getElementById('score-final');
+      sf.style.display = 'block';
+      document.getElementById('score-num').textContent = `${correctasN}/20`;
+      const pct = (correctasN/20)*100;
+      const msg = pct >= 90 ? '🏆 ¡Excelente! Dominas muy bien los temas.'
+                : pct >= 70 ? '👍 ¡Muy bien! Repasa los temas en los que fallaste.'
+                : pct >= 50 ? '📚 Bien, pero necesitas repasar más. ¡Tú puedes!'
+                : '💪 Sigue practicando. Revisa la teoría y vuelve a intentarlo.';
+      document.getElementById('score-msg').textContent = msg;
+      sf.scrollIntoView({ behavior: 'smooth' });
+    }, 400);
+  }
+}
+
+function reiniciar() {
+  respuestas = new Array(PREGUNTAS.length).fill(null);
+  respondidas = 0;
+  document.getElementById('contador').textContent = ' 0 / 20';
+  document.getElementById('correctas').textContent = '0';
+  document.getElementById('score-final').style.display = 'none';
+  initPractica();
+}
+
+// ── CONVERTIDOR DE BASES ──────────────────────────────────────────────────
+function convertir() {
+  const num = document.getElementById('conv-num').value.trim().toUpperCase();
+  const orig = parseInt(document.getElementById('conv-origen').value);
+  const dest = parseInt(document.getElementById('conv-destino').value);
+  const res = document.getElementById('conv-resultado');
+  const paso = document.getElementById('conv-paso');
+  if (!num) { res.innerHTML = '<span style="opacity:.5;font-size:.9rem">Ingresa un número arriba...</span>'; paso.innerHTML=''; return; }
+  try {
+    const decimal = parseInt(num, orig);
+    if (isNaN(decimal)) throw new Error('Número inválido para la base seleccionada');
+    const resultado = decimal.toString(dest).toUpperCase();
+    const nombres = {2:'Binario',8:'Octal',10:'Decimal',16:'Hexadecimal'};
+    res.innerHTML = `<span style="opacity:.7;font-size:.85rem">${num} en base ${orig} =</span><span class="conv-val">${resultado} <span style="font-size:.85rem;opacity:.7">(${nombres[dest]})</span></span><span style="opacity:.6;font-size:.8rem">Decimal intermedio: ${decimal}</span>`;
+    // Mostrar pasos si es decimal→binario
+    if (orig===10 && dest===2) {
+      let n=decimal, pasos=[], divs=[];
+      while(n>0){ pasos.unshift(n%2); divs.push(`${n} ÷ 2 = ${Math.floor(n/2)} resto <strong style="color:var(--dorado)">${n%2}</strong>`); n=Math.floor(n/2); }
+      paso.innerHTML = `<div class="caja caja-verde"><div class="caja-titulo">📋 Pasos de conversión</div>${divs.map(d=>`<p>${d}</p>`).join('')}<p><strong>Leer restos de abajo hacia arriba: ${resultado}</strong></p></div>`;
+    } else { paso.innerHTML=''; }
+  } catch(e) {
+    res.innerHTML = `<span style="color:#ff8a80">${e.message}</span>`;
+    paso.innerHTML='';
+  }
+}
+
+// ── CALCULADORA REGLA DE TRES ─────────────────────────────────────────────
+function calcR3() {
+  const a1=parseFloat(document.getElementById('r3-a1').value);
+  const b1=parseFloat(document.getElementById('r3-b1').value);
+  const a2=parseFloat(document.getElementById('r3-a2').value);
+  const tipo=document.querySelector('input[name="tipo"]:checked').value;
+  const xField=document.getElementById('r3-x');
+  const expl=document.getElementById('r3-explicacion');
+  if(isNaN(a1)||isNaN(b1)||isNaN(a2)||a1===0){ xField.value=''; expl.innerHTML=''; return; }
+  const x = tipo==='directa' ? (a2*b1)/a1 : (a1*b1)/a2;
+  xField.value = Math.round(x*1000)/1000;
+  const formula = tipo==='directa'
+    ? `x = (A₂ × B₁) ÷ A₁ = (${a2} × ${b1}) ÷ ${a1} = <strong>${xField.value}</strong>`
+    : `x = (A₁ × B₁) ÷ A₂ = (${a1} × ${b1}) ÷ ${a2} = <strong>${xField.value}</strong>`;
+  expl.innerHTML=`<div class="caja caja-verde"><div class="caja-titulo">📋 Fórmula aplicada (${tipo})</div><p>${formula}</p></div>`;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+initPractica();
+</script>
+</body>
+</html>
